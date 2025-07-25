@@ -75,3 +75,8 @@ export const addPersonalTask = async (
 export const deletePersonalTask = async (id: string) => {
   return await deleteDoc(doc(db, "personalTasks", id));
 };
+
+// ✅ 7. Manager: delete any task (by ID)
+export const deleteTask = async (id: string) => {
+  return await deleteDoc(doc(db, "tasks", id));
+};

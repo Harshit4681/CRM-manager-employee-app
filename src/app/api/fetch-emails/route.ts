@@ -1,89 +1,65 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import Imap from 'imap';
 import { simpleParser } from 'mailparser';
 
-export async function GET(req: NextRequest) {
-  return new Promise((resolve) => {
-    const imap = new Imap({
-      user: 'contact@nkmdigital.com',
-      password: 'Nil@!123#',
-      host: 'imap.hostinger.com',
-      port: 993,
-      tls: true,
-    });
+export async function GET() {
+  const imapConfig = {
+    user: 'contact@nkmdigital.com',
+    password: 'Nil@!123#',
+    host: 'imap.hostinger.com',
+    port: 993,
+    tls: true,
+  };
 
-    function openInbox(cb: any) {
-      imap.openBox('INBOX', true, cb);
-    }
+  const fetchEmails = (): Promise<any[]> =>
+    new Promise((resolve, reject) => {
+      const imap = new Imap(imapConfig);
+      const emails: any[] = [];
 
-    imap.once('ready', function () {
-      openInbox(function (err: any, box: any) {
-        if (err) throw err;
+      function openInbox(cb: any) {
+        imap.openBox('INBOX', true, cb);
+      }
 
-        // Fetch latest 500 emails
-        const start = Math.max(box.messages.total - 499, 1);
-        const fetch = imap.seq.fetch(`${start}:${box.messages.total}`, {
-          bodies: '',
-          struct: true,
-        });
+      imap.once('ready', () => {
+        openInbox((err: any, box: any) => {
+          if (err) return reject(err);
 
-        const emails: any[] = [];
-        let pending = 0;
+          const fetch = imap.seq.fetch(`${box.messages.total}:*`, {
+            bodies: '',
+            struct: true,
+          });
 
-        fetch.on('message', function (msg: any, seqno: any) {
-          pending++;
-          msg.on('body', function (stream: any, info: any) {
-            simpleParser(stream, (err, parsed) => {
-              if (err) {
-                console.error('Parse error:', err);
-                pending--;
-                return;
-              }
-
-              emails.push({
-                from: parsed.from?.text || '',
-                to: parsed.to?.text || '',
-                cc: parsed.cc?.text || '',
-                bcc: parsed.bcc?.text || '',
-                subject: parsed.subject || '',
-                date: parsed.date?.toString() || '',
-                text: parsed.text || '',
-                html: parsed.html || '',
-                attachments: parsed.attachments || [],
-                headers: parsed.headers || {},
+          fetch.on('message', (msg: any) => {
+            msg.on('body', (stream: any) => {
+              simpleParser(stream, (err, parsed) => {
+                if (!err && parsed) {
+                  emails.push({
+                    subject: parsed.subject,
+                    from: parsed.from.text,
+                    date: parsed.date,
+                    body: parsed.text,
+                  });
+                }
               });
-
-              pending--;
-              if (pending === 0) {
-                imap.end();
-                emails.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-                resolve(NextResponse.json({ emails }));
-              }
             });
           });
-        });
 
-        fetch.once('error', function (err: any) {
-          console.error('Fetch error:', err);
-          imap.end();
-          resolve(NextResponse.json({ emails: [], error: 'Fetch failed' }));
-        });
-
-        fetch.once('end', function () {
-          if (pending === 0) {
+          fetch.once('end', () => {
             imap.end();
-            emails.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            resolve(NextResponse.json({ emails }));
-          }
+          });
         });
       });
+
+      imap.once('error', (err: any) => reject(err));
+      imap.once('end', () => resolve(emails));
+      imap.connect();
     });
 
-    imap.once('error', function (err) {
-      console.error(err);
-      resolve(NextResponse.json({ emails: [], error: 'Connection failed' }));
-    });
-
-    imap.connect();
-  });
+  try {
+    const emails = await fetchEmails();
+    return NextResponse.json({ emails });
+  } catch (error) {
+    console.error('Fetch email error:', error);
+    return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
+  }
 }
