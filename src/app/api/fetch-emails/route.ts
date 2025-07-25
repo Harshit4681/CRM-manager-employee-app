@@ -28,16 +28,15 @@ export async function GET() {
             bodies: '',
             struct: true,
           });
-
-          fetch.on('message', (msg: any) => {
-            msg.on('body', (stream: any) => {
-              simpleParser(stream, (err, parsed) => {
-                if (!err && parsed) {
-                  emails.push({
-                    subject: parsed.subject,
-                    from: parsed.from.text,
-                    date: parsed.date,
-                    body: parsed.text,
+fetch.on('message', (msg: any) => {
+  msg.on('body', (stream: any) => {
+    simpleParser(stream, (err: any, parsed: any) => {
+      if (!err && parsed) {
+        emails.push({
+          subject: parsed.subject,
+          from: parsed.from.text,
+          date: parsed.date,
+          body: parsed.text,
                   });
                 }
               });
