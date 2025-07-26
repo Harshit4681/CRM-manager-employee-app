@@ -7,7 +7,7 @@ import { auth } from "@/lib/firebase";
 export default function ManagerDashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null); // currently unused
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -16,7 +16,7 @@ export default function ManagerDashboardPage() {
       } else if (currentUser.email !== "harshitsharma.it27@jecrc.ac.in") {
         router.push("/not-authorized");
       } else {
-        setUser(currentUser);
+        // setUser(currentUser); // no need unless you use it
         setLoading(false);
       }
     });
@@ -28,24 +28,30 @@ export default function ManagerDashboardPage() {
 
   return (
     <div>
-      <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>    Dashboard</h1>
-      <div style={{
-        background: "#fff",
-        borderRadius: "10px",
-        padding: "30px",
-        boxShadow: "0 0 10px rgba(0,0,0,0.05)"
-      }}>
-        <h3>         Google Analytics Area</h3>
-        <div style={{
-          background: "#e5e7eb",
-          height: "300px",
-          marginTop: "20px",
+      <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>
+        Dashboard
+      </h1>
+      <div
+        style={{
+          background: "#fff",
           borderRadius: "10px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "#6b7280"
-        }}>
+          padding: "30px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.05)",
+        }}
+      >
+        <h3>Google Analytics Area</h3>
+        <div
+          style={{
+            background: "#e5e7eb",
+            height: "300px",
+            marginTop: "20px",
+            borderRadius: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "#6b7280",
+          }}
+        >
           Embed Google Analytics here
         </div>
       </div>

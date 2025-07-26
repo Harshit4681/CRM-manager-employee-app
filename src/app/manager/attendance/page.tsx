@@ -25,7 +25,7 @@ const ManagerAttendancePage = () => {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>Today's Attendance ({today})</h2>
+      <h2>Today&apos;s Attendance ({today})</h2>
       {loading ? (
         <p>Loading...</p>
       ) : attendanceList.length === 0 ? (

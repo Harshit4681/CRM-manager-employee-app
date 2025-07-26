@@ -9,7 +9,9 @@ import {
 } from "@/lib/chatService";
 
 export default function EmployeeChatScreen() {
-  const { chatId } = useParams();
+  const params = useParams();
+  const chatId = params?.chatId as string | undefined;
+
   const [msgs, setMsgs] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -18,15 +20,19 @@ export default function EmployeeChatScreen() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedEmail = localStorage.getItem("employeeEmail");
-      setEmployeeEmail(storedEmail);
+      if (storedEmail) setEmployeeEmail(storedEmail);
     }
   }, []);
 
   useEffect(() => {
     if (!chatId || !employeeEmail) return;
-    const unsub = subscribeToMessages(chatId as string, setMsgs);
-    markChatAsRead(chatId as string, employeeEmail);
-    return () => unsub();
+
+    const unsub = subscribeToMessages(chatId, setMsgs);
+    markChatAsRead(chatId, employeeEmail);
+
+    return () => {
+      if (typeof unsub === "function") unsub();
+    };
   }, [chatId, employeeEmail]);
 
   useEffect(() => {
@@ -35,7 +41,7 @@ export default function EmployeeChatScreen() {
 
   const handleSend = async () => {
     if (!input.trim() || !chatId || !employeeEmail) return;
-    await sendMessage(chatId as string, employeeEmail, input.trim());
+    await sendMessage(chatId, employeeEmail, input.trim());
     setInput("");
   };
 

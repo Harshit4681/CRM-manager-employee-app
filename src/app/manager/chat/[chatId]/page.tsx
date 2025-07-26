@@ -5,7 +5,9 @@ import { useParams } from "next/navigation";
 import { subscribeToMessages, sendMessage, markChatAsRead } from "@/lib/chatService";
 
 export default function ManagerChatScreen() {
-  const { chatId } = useParams();
+  const params = useParams();
+  const chatId = typeof params?.chatId === "string" ? params.chatId : Array.isArray(params?.chatId) ? params.chatId[0] : "";
+
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const managerEmail =
@@ -14,14 +16,14 @@ export default function ManagerChatScreen() {
   useEffect(() => {
     if (!chatId || !managerEmail) return;
 
-    const unsub = subscribeToMessages(chatId as string, setMessages);
-    markChatAsRead(chatId as string, managerEmail);
+    const unsub = subscribeToMessages(chatId, setMessages);
+    markChatAsRead(chatId, managerEmail);
     return () => unsub();
   }, [chatId, managerEmail]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    await sendMessage(chatId as string, managerEmail!, input);
+    await sendMessage(chatId, managerEmail!, input);
     setInput("");
   };
 

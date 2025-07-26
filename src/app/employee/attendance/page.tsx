@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
@@ -11,21 +11,21 @@ const EmployeeAttendancePage = () => {
   const today = new Date().toISOString().split('T')[0]; // "2025-07-13"
   const docId = `${email}_${today}`;
 
+  const checkAttendance = useCallback(async (email: string) => {
+    const docRef = doc(db, 'attendance', `${email}_${today}`);
+    const snapshot = await getDoc(docRef);
+    if (snapshot.exists()) {
+      setStatus(snapshot.data().status);
+    }
+  }, [today]);
+
   useEffect(() => {
     const storedEmail = localStorage.getItem('employeeEmail');
     if (storedEmail) {
       setEmail(storedEmail);
       checkAttendance(storedEmail);
     }
-  }, []);
-
-  const checkAttendance = async (email: string) => {
-    const docRef = doc(db, 'attendance', `${email}_${today}`);
-    const snapshot = await getDoc(docRef);
-    if (snapshot.exists()) {
-      setStatus(snapshot.data().status);
-    }
-  };
+  }, [checkAttendance]);
 
   const handleMarkAttendance = async () => {
     if (!email) return alert('Employee email not found');
