@@ -96,3 +96,4 @@ export const markChatAsRead = async (id: string, email: string): Promise<void> =
   const data = snap.data() as { unreadBy: string[] };
   await updateDoc(ref, { unreadBy: data.unreadBy.filter((u) => u !== email) });
 };
+//hii
