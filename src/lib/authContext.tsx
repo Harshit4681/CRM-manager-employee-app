@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "./firebase"; // Make sure firebase.ts exports 'auth'
+import { auth } from "./firebase";
 
 type AuthContextType = {
   user: User | null;
@@ -14,16 +14,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Only set up auth listener if Firebase auth is available
-    if (!auth) {
-      console.warn("Firebase auth not initialized - environment variables may be missing");
+    // Only run on client side and if Firebase auth is available
+    if (typeof window === 'undefined' || !auth) {
+      console.warn("Firebase auth not available or running on server");
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
-    });
-    return () => unsubscribe();
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        setUser(firebaseUser);
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      console.warn("Firebase auth listener setup failed:", error);
+    }
   }, []);
 
   return (
