@@ -31,7 +31,7 @@ export default function LoginPage() {
         return;
       }
 
-      // ✅ Employee Login (Firestore check)
+      // ✅ Employee Login (Firestore)
       const snapshot = await getDocs(collection(db, "employees"));
       const employees = snapshot.docs.map((doc) => doc.data());
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
       );
 
       if (found) {
-        localStorage.setItem("employeeEmail", email); // ✅ ← ADDED LINE
+        localStorage.setItem("employeeEmail", email);
         router.push("/employee");
       } else {
         setError("Invalid employee credentials.");
@@ -52,7 +52,9 @@ export default function LoginPage() {
 
   return (
     <div style={{ padding: "50px", maxWidth: "400px", margin: "auto" }}>
-      <h2 style={{ fontSize: "24px", marginBottom: "20px", textAlign: "center" }}>Login</h2>
+      <h2 style={{ fontSize: "24px", marginBottom: "20px", textAlign: "center" }}>
+        Login
+      </h2>
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -72,7 +74,11 @@ export default function LoginPage() {
         />
         <button type="submit" style={buttonStyle}>Login</button>
       </form>
-      {error && <p style={{ color: "red", marginTop: "15px", textAlign: "center" }}>{error}</p>}
+      {error && (
+        <p style={{ color: "red", marginTop: "15px", textAlign: "center" }}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }
