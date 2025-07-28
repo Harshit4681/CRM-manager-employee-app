@@ -1,28 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+// import { useRouter } from "next/navigation";
+// import { onAuthStateChanged } from "firebase/auth";
+// import { auth } from "@/lib/firebase";
 
 export default function ManagerDashboardPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  // const [user, setUser] = useState<any>(null); // currently unused
+  // const router = useRouter();
+  const [loading, setLoading] = useState(false); // Set to false directly since no auth
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        router.push("/login");
-      } else if (currentUser.email !== "harshitsharma.it27@jecrc.ac.in") {
-        router.push("/not-authorized");
-      } else {
-        // setUser(currentUser); // no need unless you use it
-        setLoading(false);
-      }
-    });
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+  //     if (!currentUser) {
+  //       router.push("/login");
+  //     } else if (currentUser.email !== "harshitsharma.it27@jecrc.ac.in") {
+  //       router.push("/not-authorized");
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //   });
 
-    return () => unsubscribe();
-  }, [router]);
+  //   return () => unsubscribe();
+  // }, [router]);
 
   if (loading) return <p>.......Loading</p>;
 
