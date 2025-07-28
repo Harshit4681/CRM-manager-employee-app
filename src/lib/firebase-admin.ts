@@ -1,7 +1,12 @@
 // src/lib/firebase-admin.ts
 import * as admin from "firebase-admin";
 
-if (!admin.apps.length) {
+// Check if we have the required environment variables
+const hasRequiredEnvVars = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID && 
+                          process.env.FIREBASE_CLIENT_EMAIL && 
+                          process.env.FIREBASE_PRIVATE_KEY;
+
+if (!admin.apps.length && hasRequiredEnvVars) {
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -11,7 +16,7 @@ if (!admin.apps.length) {
   });
 }
 
-const adminAuth = admin.auth();
-const adminDb = admin.firestore();
+const adminAuth = hasRequiredEnvVars ? admin.auth() : null;
+const adminDb = hasRequiredEnvVars ? admin.firestore() : null;
 
 export { adminAuth, adminDb };

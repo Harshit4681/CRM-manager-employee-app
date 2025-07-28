@@ -16,6 +16,12 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
+    // Check if Firebase is initialized
+    if (!auth || !db) {
+      setError("Authentication service is not available. Please check your configuration.");
+      return;
+    }
+
     try {
       // ✅ Manager Login
       if (email === "harshitsharma.it27@jecrc.ac.in") {
