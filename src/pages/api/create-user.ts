@@ -13,6 +13,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: "Missing required fields" });
   }
 
+  // Check if Firebase Admin is properly initialized
+  if (!adminAuth || !adminDb) {
+    return res.status(500).json({ error: "Firebase Admin not initialized. Check environment variables." });
+  }
+
   try {
     // ✅ Create Firebase Auth user
     const userRecord = await adminAuth.createUser({
