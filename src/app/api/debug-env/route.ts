@@ -9,7 +9,8 @@ export async function GET() {
     hasFirebasePrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
     firebaseApiKeyPrefix: process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.substring(0, 10) + '...',
     firebaseProjectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    isBuilding: process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL,
+    vercelUrl: process.env.VERCEL_URL || 'not set',
+    vercel: process.env.VERCEL || 'not set',
     hasValidConfig: !!(
       process.env.NEXT_PUBLIC_FIREBASE_API_KEY && 
       process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "dummy-api-key" &&

@@ -4,8 +4,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Check if we're in a build environment or if env vars are missing
-const isBuilding = process.env.NODE_ENV === 'production' && !process.env.VERCEL_URL;
+// Check if we have valid Firebase configuration
 const hasValidFirebaseConfig = 
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY && 
   process.env.NEXT_PUBLIC_FIREBASE_API_KEY !== "dummy-api-key" &&
@@ -22,8 +21,8 @@ let app: any = null;
 let auth: any = null;
 let db: any = null;
 
-// Only initialize Firebase in the browser with valid config, or on server with valid config
-if (hasValidFirebaseConfig && !isBuilding) {
+// Only initialize Firebase if we have valid configuration
+if (hasValidFirebaseConfig) {
   try {
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
