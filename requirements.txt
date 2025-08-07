@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+pydantic-settings
+openai
+requests
+beautifulsoup4
+lxml
+aiofiles
